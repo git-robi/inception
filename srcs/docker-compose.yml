@@ -13,6 +13,8 @@ services:
       - inception_network
     depends_on:
       - wordpress
+    volumes:
+      - wordpress_data:/var/www/html
     ports:
       - '443:443'
     expose:
@@ -21,7 +23,9 @@ services:
   mariadb:
     container_name: mariadb
     build: ./requirements/mariadb
-    volumes: #put volumes path here
+    volumes:
+      - mariadb_volume:/var/lib/mysql   #/var/lib/mysql is the default directory inside a MariaDB container, It's where the database software stores all of its data
+                                        #This line tells Docker that you want to bind mount the /home/rgiambon/data/mysql directory on your host to /var/lib/mysql inside the container.
     networks: 
       - inception_network
     restart: always
@@ -36,8 +40,26 @@ services:
     build: ./requirements/wordpress
     env_file:
       - .env
-    volumes: #put volumes path here
+    volumes:
+      - wordpress_data:/var/www/html
     networks:
       - inception_network
     restart: always
+
+volumes:
+  
+  mariadb_volume:
+    driver: local    #local storage on your host machine
+    driver_opts:     #additional details about how Docker should handle these volumes
+      type: none     #This tells Docker that you're not creating a new Docker-managed volume, but instead you want to link to existing directories on your host machine
+      device: /home/rgiambon/data/mysql  #the actual path on your host machine where the data should be stored
+      o: bind        #This tells Docker to bind mount these directories. This means the data will be shared between the container and your host machine, so any change in the container will reflect on the host, and vice versa.
+  
+  wordpress_volume:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/rgiambon/data/wordpress #I will have to create this directory 
+      o: bind
+
     
