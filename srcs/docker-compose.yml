@@ -15,6 +15,11 @@ services:
       - wordpress
     volumes:
       - wordpress_data:/var/www/html
+    secrets:
+      - db_password
+      - db_root_password
+    environment:
+      - DOMAIN_NAME=${DOMAIN_NAME}
     ports:
       - '443:443'
     expose:
@@ -40,8 +45,12 @@ services:
     depends_on:
       - mariadb
     build: ./requirements/wordpress
-    env_file:
-      - .env
+    environment:
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_root_password
+      - MYSQL_PASSWORD_FILE=/run/secrets/db_password
+    secrets:
+      - db_password
+      - db_root_password
     volumes:
       - wordpress_data:/var/www/html
     networks:
