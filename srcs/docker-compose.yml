@@ -24,8 +24,10 @@ services:
     container_name: mariadb
     build: ./requirements/mariadb
     volumes:
-      - mariadb_volume:/var/lib/mysql   #/var/lib/mysql is the default directory inside a MariaDB container, It's where the database software stores all of its data
-                                        #This line tells Docker that you want to bind mount the /home/rgiambon/data/mysql directory on your host to /var/lib/mysql inside the container.
+      - mariadb_volume:/var/lib/mysql   #/var/lib/mysql is the default directory inside a MariaDB container, it's where the database software stores all of its data
+                                        #this line tells Docker that you want to bind mount the /home/rgiambon/data/mysql directory on your host to /var/lib/mysql inside the container.
+    secrets:
+      - db_root_password  # mount the secret into the container
     networks: 
       - inception_network
     restart: always
@@ -34,7 +36,7 @@ services:
 
   wordpress:
     container_name: wordpress
-    #Create a depedency between the 2 container, db will be launched before
+    #create a depedency between the 2 container, db will be launched before
     depends_on:
       - mariadb
     build: ./requirements/wordpress
@@ -45,6 +47,12 @@ services:
     networks:
       - inception_network
     restart: always
+
+secrets:
+  db_password:
+    file: ./secrets/db_password.txt
+  db_root_password:
+    file: ./secrets/db_root_password.txt
 
 volumes:
   
