@@ -1,0 +1,43 @@
+version: '3.8'
+
+networks:
+  inception_network:
+
+services:
+  
+  nginx:
+    container_name: nginx
+    build: ./requirements/nginx
+    restart: always
+    networks: 
+      - inception_network
+    depends_on:
+      - wordpress
+    ports:
+      - '443:443'
+    expose:
+      - '443'
+
+  mariadb:
+    container_name: mariadb
+    build: ./requirements/mariadb
+    volumes: #put volumes path here
+    networks: 
+      - inception_network
+    restart: always
+    env_file:
+      - .env
+
+  wordpress:
+    container_name: wordpress
+    #Create a depedency between the 2 container, db will be launched before
+    depends_on:
+      - mariadb
+    build: ./requirements/wordpress
+    env_file:
+      - .env
+    volumes: #put volumes path here
+    networks:
+      - inception_network
+    restart: always
+    
