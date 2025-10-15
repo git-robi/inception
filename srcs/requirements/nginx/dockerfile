@@ -4,6 +4,7 @@ RUN apk update && \
     apk add --no-cache nginx openssl
 
 RUN mkdir -p /etc/nginx/ssl
+RUN mkdir -p /var/log/nginx
 
 RUN openssl req -newkey rsa:4096 -x509 -sha256 -days 365 -nodes \
        -out /etc/nginx/ssl/rgiambon_cert.crt \
@@ -11,9 +12,8 @@ RUN openssl req -newkey rsa:4096 -x509 -sha256 -days 365 -nodes \
        -subj "/C=ES/ST=Barcelona/L=Barcelona/O=42 School/OU=rgiambon/CN=rgiambon/" 
        #last one is domain name
 
-COPY ./conf/nginx_conf.conf /etc/nginx/conf.d
+COPY ./conf/nginx_conf.conf /etc/nginx/nginx.conf
 COPY conf/index.php /var/www/html/index.php
-
 
 RUN mkdir -p /run/nginx
 

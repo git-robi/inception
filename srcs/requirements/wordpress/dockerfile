@@ -1,11 +1,46 @@
 FROM alpine:3.21.4
 
-RUN apk update && apk upgrade && apk add php83 php83-fpm \  
-			&& apk add vim
+# Install PHP and required extensions
+RUN apk update && apk add --no-cache \
+    php83 \
+    php83-fpm \
+    php83-mysqli \
+    php83-json \
+    php83-curl \
+    php83-dom \
+    php83-mbstring \
+    php83-openssl \
+    php83-xml \
+    php83-session \
+    php83-ctype \
+    php83-tokenizer \
+    netcat-openbsd \
+    wget && \
+    rm -rf /var/cache/apk/*
 
-# RUN chown -R www-data:www-data /var/lib/nginx/html
-# RUN chmod 755 /var/lib/nginx/html
+# Download WordPress
+WORKDIR /var/www/html
+RUN wget https://wordpress.org/latest.tar.gz && \
+    tar -xzf latest.tar.gz --strip-components=1 && \
+    rm latest.tar.gz && \
+    chown -R nobody:nobody /var/www/html
 
-COPY conf/www.conf /etc/php83/php-fpm.d/www.conf
+# Create a simple PHP-FPM config
+RUN echo '[www]' > /etc/php83/php-fpm.d/www.conf && \
+    echo 'user = nobody' >> /etc/php83/php-fpm.d/www.conf && \
+    echo 'group = nobody' >> /etc/php83/php-fpm.d/www.conf && \
+    echo 'listen = 0.0.0.0:9000' >> /etc/php83/php-fpm.d/www.conf && \
+    echo 'pm = dynamic' >> /etc/php83/php-fpm.d/www.conf && \
+    echo 'pm.max_children = 5' >> /etc/php83/php-fpm.d/www.conf && \
+    echo 'pm.start_servers = 2' >> /etc/php83/php-fpm.d/www.conf && \
+    echo 'pm.min_spare_servers = 1' >> /etc/php83/php-fpm.d/www.conf && \
+    echo 'pm.max_spare_servers = 3' >> /etc/php83/php-fpm.d/www.conf && \
+    echo 'catch_workers_output = yes' >> /etc/php83/php-fpm.d/www.conf
 
-CMD ["php-fpm83", "-F"]
+COPY conf/setup.sh /usr/local/bin/setup.sh
+RUN chmod +x /usr/local/bin/setup.sh
+
+EXPOSE 9000
+
+ENTRYPOINT ["/usr/local/bin/setup.sh"]
+CMD ["php-fpm83", "-F", "-R"]

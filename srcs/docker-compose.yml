@@ -1,4 +1,3 @@
-version: '3.8'
 
 networks:
   inception_network:
@@ -32,6 +31,7 @@ services:
       - mariadb_volume:/var/lib/mysql   #/var/lib/mysql is the default directory inside a MariaDB container, it's where the database software stores all of its data
                                         #this line tells Docker that you want to bind mount the /home/rgiambon/data/mysql directory on your host to /var/lib/mysql inside the container.
     secrets:
+      - db_password
       - db_root_password  # mount the secret into the container
     networks: 
       - inception_network
@@ -48,6 +48,11 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_root_password
       - MYSQL_PASSWORD_FILE=/run/secrets/db_password
+      - WORDPRESS_DB_NAME=${MYSQL_DATABASE}
+      - WORDPRESS_DB_USER=${MYSQL_USER}
+      - WORDPRESS_DB_HOST=mariadb:3306
+      - WORDPRESS_DB_CHARSET=utf8
+      - WORDPRESS_DB_COLLATE=
     secrets:
       - db_password
       - db_root_password
@@ -78,5 +83,3 @@ volumes:
       type: none
       device: /Users/nemo/data/wordpress #/home/rgiambon/data/wordpress #I will have to create this directory 
       o: bind
-
-    
