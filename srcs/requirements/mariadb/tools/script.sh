@@ -1,0 +1,12 @@
+#!/bin/sh
+
+service mysql start
+
+mysql -e "CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE};"
+mysql -e "CREATE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD_FILE}';"
+mysql -e "GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%';"
+mysql -u${MYSQL_ROOT_USERr} -p${MYSQL_ROOT_PASSWORD_FILE} -e "ALTER USER '${MYSQL_ROOT_USER}'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD_FILE}';"
+mysql -e "FLUSH PRIVILEGES;"
+mysqladmin -u${MYSQL_ROOT_USER} -p${MYSQL_ROOT_PASSWORD_FILE} shutdown
+
+exec "$@"

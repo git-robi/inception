@@ -14,7 +14,7 @@ services:
     depends_on:
       - wordpress
     volumes:
-      - wordpress_data:/var/www/html
+      - wordpress_volume:/var/www/html
     secrets:
       - db_password
       - db_root_password
@@ -52,16 +52,16 @@ services:
       - db_password
       - db_root_password
     volumes:
-      - wordpress_data:/var/www/html
+      - wordpress_volume:/var/www/html
     networks:
       - inception_network
     restart: always
 
 secrets:
   db_password:
-    file: ./secrets/db_password.txt
+    file: ../secrets/db_password.txt
   db_root_password:
-    file: ./secrets/db_root_password.txt
+    file: ../secrets/db_root_password.txt
 
 volumes:
   
@@ -69,14 +69,14 @@ volumes:
     driver: local    #local storage on your host machine
     driver_opts:     #additional details about how Docker should handle these volumes
       type: none     #This tells Docker that you're not creating a new Docker-managed volume, but instead you want to link to existing directories on your host machine
-      device: /home/rgiambon/data/mysql  #the actual path on your host machine where the data should be stored
+      device: /Users/nemo/data/mysql #/home/rgiambon/data/mysql  #the actual path on your host machine where the data should be stored
       o: bind        #This tells Docker to bind mount these directories. This means the data will be shared between the container and your host machine, so any change in the container will reflect on the host, and vice versa.
   
   wordpress_volume:
     driver: local
     driver_opts:
       type: none
-      device: /home/rgiambon/data/wordpress #I will have to create this directory 
+      device: /Users/nemo/data/wordpress #/home/rgiambon/data/wordpress #I will have to create this directory 
       o: bind
 
     

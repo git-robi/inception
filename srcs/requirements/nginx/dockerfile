@@ -1,8 +1,7 @@
-FROM debian:buster
+FROM alpine:3.21.4
 
-RUN apt-get update && \
-    apt-get install -y nginx openssl && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk update && \
+    apk add --no-cache nginx openssl
 
 RUN mkdir -p /etc/nginx/ssl
 
@@ -13,6 +12,8 @@ RUN openssl req -newkey rsa:4096 -x509 -sha256 -days 365 -nodes \
        #last one is domain name
 
 COPY ./conf/nginx_conf.conf /etc/nginx/conf.d
+COPY conf/index.php /var/www/html/index.php
+
 
 RUN mkdir -p /run/nginx
 
