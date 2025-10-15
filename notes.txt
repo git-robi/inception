@@ -1,0 +1,2 @@
+device: /home/rgiambon/data/mysql
+device: /home/rgiambon/data/wordpress
