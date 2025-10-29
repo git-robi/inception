@@ -1,0 +1,12 @@
+device: /home/rgiambon/data/mysql
+device: /home/rgiambon/data/wordpress
+
+Install Docker & Docker Compose in the VM
+Clone repository
+Add domain to 
+hosts
+: 127.0.0.1 rgiambon.42.fr
+Create data directories: /home/rgiambon/data/
+
+change in makefile:
+DATA_DIR = /Users/nemo/data
